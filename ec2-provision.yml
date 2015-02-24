@@ -1,0 +1,47 @@
+---
+
+# Do the AWS provisioning
+- name: Create new web instances
+  connection: local
+  hosts: localhost
+  gather_facts: False
+  tasks:
+    - name: Launch instance
+      local_action: 
+         module: ec2
+         key_name: "matts"
+         group: ['web-servers', 'default-alt']
+         instance_type: "t2.micro"
+         image: "ami-3ccc7a54"
+         instance_tags: 
+            "{{ item.tags }}"
+         wait: true
+         region: "us-east-1"
+         zone: "{{ item.zone }}"
+         vpc_subnet_id: "{{ item.sub }}"
+      with_items: 
+        - { sub: 'subnet-ee2208a8', zone: 'us-east-1a', tags: {'Name': web01} }
+        - { sub: 'subnet-04753f2c', zone: 'us-east-1c', tags: {'Name': web02} }
+      register: ec2
+#    - name: Dump the JSON
+#      debug: var=ec2
+    # - name: Add new instance to host group
+    #   local_action: add_host hostname="{{ item.private_ip }}" groupname=web_new
+    #   with_items: ec2.instances
+#     - name: Wait for SSH to come up
+#       local_action: 
+#          module: wait_for
+#          host: "{{ item.private_ip_address }}"
+#          port: "22"
+#          delay: "60"
+#          timeout: "320"
+#          state: started
+#       with_items: ec2.instances
+
+# - name: Configure instance(s)
+#   hosts: web_new
+#   sudo: True
+#   gather_facts: True
+#   roles:
+#     - common
+#     - web

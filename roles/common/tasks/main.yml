@@ -1,0 +1,12 @@
+---
+
+# Configure the instance as a web server with varnish
+
+# - local_action:
+#     module: user
+#     name: matts
+#     comment: Matt Shepherd
+#     group: admin
+
+- lineinfile: dest=/home/ubuntu/.ssh/authorized_keys line="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDBEkvXVoO/8DzxJr7lDp6aVJHi/ma8/33RrFTjk9e3r3QkH1ZO6F5w02Dc2VhZYMaxnSuec0VgZnmGC3HN/z3ffuALpcbvpajlIxLMHmh+lG9+asP3JFdwqGii9Ps/BpY2S6XcDPccdWY4D8CgvUrJMCZzkXMcaarI5QmA/4QsasW8IJP3jkVl/+YDfBmtn/cfLg7i/33T3HkBZqecewhS0K//k2vxNXHY4E3vomevTMJ2uDmkvzwaP1vJBzuosTpYstobdutHe2340CKj8pMhGAe4SIaMnPWny8HuUxcheJEMSRY2b1BhT6lbMsDzn3os4TFH8Gq5VP1ec6ybIqRp matts@mpglt-001"
+- lineinfile: dest=/home/ubuntu/.ssh/authorized_keys line="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCe9ninxQpgmvy2hOkdLMHNoGysPkuOQxZCWeU1q1KKZVpdJjH6na04KD3OJzmCOdf2IV6WN0QX1qwcWx3rRPH6pFNMdqLVGEjdoTfKBx+LNk/FT0LtSUpLjRCPJROsgBQR8nySxvEe1E/Ax3vJm9N6SDgnJZKBdK6FVdxdKc4ImXHc+vVSf6gMJhU8neuKmQxTz7gK17MYbOy7i9aVC0zYwvkjmFZhH6piROaQ6vfFYMlEG76XUx/roalJMJv3izHQ8NGibdubwMS6JSG9Ufgrhtlr1WTi1eX+ojuilansZI78SYEGuvQVJtI9O4ScnqiFgnJmeyKbAMAyiu5IBpGT daniels@mindpointgroup.com"

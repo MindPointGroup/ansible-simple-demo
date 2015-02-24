@@ -1,0 +1,91 @@
+---
+
+# Configure the instance as a web server with varnish
+
+- name: Install http and php etc
+  sudo: True
+  apt: name={{ item }} state=present
+  with_items:
+   - apache2
+   - php5
+   - php5-mysql
+   - libapache2-mod-php5 
+   - php5-mcrypt
+   - php-apc
+   - php5-curl
+   - php5-common
+   - openssl
+#   - ntpq
+   - git
+   - varnish
+
+
+- name: make the directory for ssl certs
+  sudo: True
+  command: mkdir /etc/apache2/ssl creates=/etc/apache2/ssl
+
+- name: copy ssl files needed
+  sudo: True
+  copy: src=/Users/matts/Documents/ansible/mpg/roles/web/files/{{ item.src }} dest=/etc/apache2/ssl/{{ item.dest }} group=root owner=root mode=0400
+  with_items:
+    - { src: 'geotrust_inter.crt', dest: 'geotrust_inter.crt' }
+    - { src: 'geotrust_root.crt', dest: 'geotrust_root.crt' }
+    - { src: 'mindpointgroup_com.crt', dest: 'mindpointgroup_com.crt' }
+    - { src: 'secrets/mindpointgroup_com.key', dest: 'mindpointgroup_com.key' }
+
+- name: copy config files needed
+  sudo: True
+  copy: src=/Users/matts/Documents/ansible/mpg/roles/web/files/{{ item.src }} dest={{ item.dest }} group=root owner=root mode=0640
+  with_items:
+    - { src: 'default.vcl', dest: '/etc/varnish/default.vcl' }
+    - { src: 'default', dest: '/etc/apache2/sites-available/default' }
+    - { src: 'default-ssl', dest: '/etc/apache2/sites-available/default-ssl' }
+
+- name: copy github key
+  sudo: True
+  copy: src=/Users/matts/Documents/ansible/mpg/roles/web/files/secrets/site_git dest=/home/ubuntu/.ssh/site_git group=ubuntu owner=ubuntu mode=0600
+
+- name: create a key for user ubuntu
+  command: ssh-keygen -t rsa -N "" -C "ubuntu@localhost" -f ~/.ssh/id_rsa creates=~/.ssh/id_rsa
+
+- name: enable sites
+  sudo: True
+  command: a2ensite {{ item }}
+  with_items:
+    - default
+    - default-ssl
+  # notify: restart apache
+
+- name: disable things
+  sudo: True
+  command: a2dissite {{ item.site }} removes={{ item.file }}
+  with_items: 
+    - { site: '000-default.conf', file: '/etc/apache2/sites-enabled/000-default.conf' }
+    - { site: 'default-ssl.conf', file: '/etc/apache2/sites-enabled/default-ssl.conf' }
+  notify: restart apache
+
+# Prep for installing the site by ensuring github.com hostkey is accepted
+- name: accept the github hostkey
+  shell: ssh-keyscan -H github.com >> /etc/ssh/ssh_known_hosts
+
+# Prep for installing the site by clearing out /var/www
+- name: rm /var/www
+  sudo: True
+  command: rm -r /var/www/
+
+# Now pull down the site code from Github
+- name: install the site
+  sudo: True
+  git: repo={{ repository }} dest=/var/www accept_hostkey=yes key_file=/home/ubuntu/.ssh/site_git
+  # notify: "{{ item }}"
+  # with_items:
+  #   - restart apache
+  #   - restart varnish
+# - include: keying.yml
+# - include: git.yml
+
+- name: restart varnish
+  service: name=varnish state=restarted
+
+- name: restart apache
+  service: name=apache2 state=restarted

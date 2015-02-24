@@ -1,0 +1,10 @@
+---
+
+# Now pull down the site code from Github
+- name: install the site
+  sudo: True
+  git: repo=git@github.com:MindPointGroup/website.git dest=/var/www accept_hostkey=yes key_file=/home/ubuntu/.ssh/site_git
+  notify: "{{ item }}"
+  with_items:
+    - restart apache
+    - restart varnish

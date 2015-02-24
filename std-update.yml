@@ -1,0 +1,11 @@
+---
+- hosts: "{{ target }}"
+  sudo: true
+  tasks:
+    - name: recurring updates on ubuntu
+      apt: name=* state=latest update_cache=true
+      when: ansible_os_family == "Debian"
+
+    - name: recurring updates on rhel
+      yum: name=* state=latest
+      when: ansible_os_family == "RedHat"
