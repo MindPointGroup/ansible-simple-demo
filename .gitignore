@@ -1,5 +1,0 @@
-*.crt
-*.key
-.DS_Store
-hosts
-.gitignore
