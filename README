@@ -1,0 +1,11 @@
+README
+====================
+
+This content is licensed under the MIT license. You are free to share and distribute.
+
+Author: Matt Shepherd <matts@mindpointgroup.com>
+Date: 03/16/2015
+
+This was developed in order to provide a demo of how Ansible could be used to automate some of the infrastructure provisioning and application configuration to a group that was relatively new to Ansible although some folks had experience with other tools in this space. It's available here for anyone to use to get started with Ansible. It is purposely designed to be overly simplistic in order to just start folks on their way.
+
+Enjoy.
