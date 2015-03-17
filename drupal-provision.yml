@@ -1,0 +1,52 @@
+---
+# Do the AWS provisioning
+- name: Create new web instances
+  connection: local
+  hosts: localhost
+  gather_facts: False
+  vars_prompt:
+    - name: ami_use
+      prompt: "What AMI should be used?"
+      default: "ami-84562dec"
+    - name: user_key
+      prompt: "Name of SSH key to use?"
+      default: "matts"
+    - name: sec_group
+      prompt: "What security group to apply?"
+      default: "lockdown+ssh"
+
+  tasks:
+    - name: Launch instance
+      local_action:
+         module: ec2
+         profile: "mpg"
+         key_name: "{{ user_key }}"
+         group: "{{ sec_group }}"
+         instance_type: "t1.micro"
+         image: "{{ ami_use }}"
+         wait: true
+         region: "us-east-1"
+         zone: "us-east-1a"
+         vpc_subnet_id: ""
+      register: ec2
+
+    - name: Add new instance to host group
+      add_host: name={{ item.public_ip }} groups=demo
+      with_items: ec2.instances
+    - name: Wait for SSH to come up
+      local_action:
+         module: wait_for
+          host={{ item.public_ip }}
+          port=22
+          delay=30
+          timeout=320
+      with_items: ec2.instances
+
+- name: Configure instance(s)
+  hosts: demo
+  sudo: True
+  gather_facts: True
+  roles:
+    - common
+    - lamp
+    - drupal

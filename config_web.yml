@@ -1,9 +1,0 @@
----
-
-- name: Configure instance(s)
-  hosts: web_new
-  sudo: True
-  gather_facts: True
-  roles:
-    - common
-    - web

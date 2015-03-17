@@ -1,0 +1,15 @@
+---
+
+# Prep for installing the site by clearing out /var/www
+- name: rm /var/www
+  sudo: True
+  command: rm -r /var/www/
+
+# Pull down the WordPress source
+- name: install the site
+  sudo: True
+  git: repo=https://github.com/WordPress/WordPress.git dest=/var/www
+  notify: "{{ item }}"
+  with_items:
+    - restart apache
+    - restart varnish

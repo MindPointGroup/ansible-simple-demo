@@ -1,6 +1,6 @@
 <VirtualHost *:8080>
         ServerAdmin webmaster@localhost
-        ServerName www.mindpointgroup.com:80
+        ServerName www.mysite.com:80
         DocumentRoot /var/www
         <Directory />
                 Options FollowSymLinks
